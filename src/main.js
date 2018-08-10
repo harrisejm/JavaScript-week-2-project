@@ -102,7 +102,8 @@ import $ from 'jquery';
             //let list = arr;
         //    let list = docDictionary["0b10e40e7e5bb627994059bad16fed4c"];
           //  $('#showIt').text(`${list}`);
-            $('#showIt').text(`${body.data[0].profile.first_name}`);
+            $('#showIt').append(`${body.data[0].profile.first_name}` + " " +  `${body.data[0].profile.last_name}` + " " + `${body.data[0].profile.title}` + "</br>" + `${body.data[0].practices[0].visit_address.street}` + "</br>" + `${body.data[0].practices[0].visit_address.city}` + ", " + `${body.data[0].practices[0].visit_address.state}` + " " + `${body.data[0].practices[0].visit_address.zip}` + "</br>" + "Phone: " + `${body.data[0].practices[0].phones[0].number}` + "</br>" + `${body.data[0].practices[0].website}`);
+
         }, function(error) {
           $('#showErrors').text(`There was an error processing your request: ${error.message}`);
         });
