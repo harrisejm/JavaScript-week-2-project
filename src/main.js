@@ -102,28 +102,56 @@ import $ from 'jquery';
             //let list = arr;
         //    let list = docDictionary["0b10e40e7e5bb627994059bad16fed4c"];
           //  $('#showIt').text(`${list}`);
+           if(body.data[0].profile.first_name === undefined) {
+             $('#showIt').append("No results found");
+           } else {
             $('#showIt').append(`${body.data[0].profile.first_name}` + " " +  `${body.data[0].profile.last_name}` + " " + `${body.data[0].profile.title}` + "</br>" + `${body.data[0].practices[0].visit_address.street}` + "</br>" + `${body.data[0].practices[0].visit_address.city}` + ", " + `${body.data[0].practices[0].visit_address.state}` + " " + `${body.data[0].practices[0].visit_address.zip}` + "</br>" + "Phone: " + `${body.data[0].practices[0].phones[0].number}` + "</br>" + `${body.data[0].practices[0].website}`);
-
+          }
         }, function(error) {
           $('#showErrors').text(`There was an error processing your request: ${error.message}`);
         });
-
-
-        // let promise1 = new Promise(function(resolve, reject) {
-        //   let request = new XMLHttpRequest();
-        //   let url = `https://api.betterdoctor.com/2016-03-01/doctors/004b64c28d73d5bb85432a500d3facd3?user_key=0d9b3d2e941d5fb5fc6b1ecdc6baf06d`;
-        //   request.onload = function() {
-        //     if (this.status === 200) {
-        //       resolve(request.response);
-        //     } else {
-        //       reject(Error(request.statusText));
-        //     }
-        //   }
-        //   request.open("GET", url, true);
-        //   request.send();
-        // });
-
-
-
       });
+
+      $('#findCondition').click(function(event) {
+         event.preventDefault();
+         let condition = $("#condition").val();
+         let conditionTest = condition.split(" ");
+         if (conditionTest.length > 1) {
+           let condition1 = [];
+           for (let i = 0; i < conditionTest.length; i++) {
+              condition1.push(conditionTest[i]);
+              condition1.push("%20");
+           }
+             condition1.pop();
+             condition = condition1.join("");
+         }
+
+        let promise = new Promise(function(resolve, reject) {
+          let request = new XMLHttpRequest();
+          let url =`https://api.betterdoctor.com/2016-03-01/doctors?query=${condition}&location=wa-seattle&user_key=0d9b3d2e941d5fb5fc6b1ecdc6baf06d`;
+          request.onload = function() {
+            if (this.status === 200) {
+              resolve(request.response);
+            } else {
+              reject(Error(request.statusText));
+            }
+          }
+          request.open("GET", url, true);
+          request.send();
+        });
+
+        promise.then(function(response) {
+          let body = JSON.parse(response);
+
+          for (let i = 0; i < body.data[0].practices.length; i++) {
+
+            $('#showIt').append(`${body.data[0].practices[i].name}` + "</br>" + `${body.data[0].practices[i].visit_address.street}` + "</br>" + `${body.data[0].practices[i].visit_address.city}` + ", " + `${body.data[0].practices[i].visit_address.state}` + " " + `${body.data[0].practices[i].visit_address.zip}` + "</br>" + "Phone: " + `${body.data[0].practices[i].phones[0].number}` + "</br>" + "Accepts New Patients: " +  `${body.data[0].practices[i].accepts_new_patients}` + "</br>" + "</br>");
+        }
+        }, function(error) {
+          $('#showErrors').text(`There was an error processing your request: ${error.message}`);
+        });
+      });
+
+
+
     });

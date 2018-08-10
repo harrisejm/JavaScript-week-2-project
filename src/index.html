@@ -5,14 +5,19 @@
   <title>Doctor Search</title>
 </head>
 <body>
-  <p>Doctor Search</p>
+  <p>Doctor (Search By Name</p>
   <form class="form-control">
     <label for="firstName">First Name</label>
-    <input name="firstName" id="firstName" type="text">
+    <input name="firstName" id="firstName" type="text" required>
     <label for="lastName">Last Name</label>
-    <input name="lastName" id="lastName" type="text">
+    <input name="lastName" id="lastName" type="text" required>
     <button class="btn btn-sucess" id="find" type="submit">Show</button>
-
+  </form>
+  <p>Doctor (Search Conditions)</p>
+  <form class="form-control">
+    <label for="condition">Condition</label>
+    <input name="condition" id="condition" type="text" required>
+    <button class="btn btn-sucess" id="findCondition" type="submit">Show</button>
   </form>
   <div class="row">
     <div class="col-md-6">
