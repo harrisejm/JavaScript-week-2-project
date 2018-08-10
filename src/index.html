@@ -7,13 +7,17 @@
 <body>
   <p>Doctor Search</p>
   <form class="form-control">
+    <label for="firstName">First Name</label>
+    <input name="firstName" id="firstName" type="text">
     <label for="lastName">Last Name</label>
-    <input name="lastName" id="firstName" type="text">
-    <button class="btn btn-sucess" id="dino" type="submit">Show</button>
+    <input name="lastName" id="lastName" type="text">
+    <button class="btn btn-sucess" id="find" type="submit">Show</button>
+
   </form>
   <div class="row">
     <div class="col-md-6">
       <p id="showIt"></p>
+      <p id="showErrors"></p>
     </div>
   </div>
 
