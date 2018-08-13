@@ -1,14 +1,35 @@
 import $ from 'jquery';
 
-export function render(data) {
-  if (data.length === 0) {
-     $('#showIt').append("No results found");
-  } else {
-    $('#showIt').append(`${data[0].profile.first_name}` + " " +  `${data[0].profile.last_name}` + " " + `${data[0].profile.title}` + "</br>" + `${data[0].practices[0].visit_address.street}` + "</br>" + `${data[0].practices[0].visit_address.city}` + ", " + `${data[0].practices[0].visit_address.state}` + " " + `${data[0].practices[0].visit_address.zip}` + "</br>" + "Phone: " + `${data[0].practices[0].phones[0].number}` + "</br>" + `${data[0].practices[0].website}`);
-  }
+export function callByCondition(condition) {
+  let promise = new Promise(function(resolve, reject) {
+    let request = new XMLHttpRequest();
+    let url =`https://api.betterdoctor.com/2016-03-01/doctors?query=${condition}&location=wa-seattle&user_key=0d9b3d2e941d5fb5fc6b1ecdc6baf06d`;
+    request.onload = function() {
+      if (this.status === 200) {
+        resolve(request.response);
+      } else {
+        reject(Error(request.statusText));
+      }
+    }
+    request.open("GET", url, true);
+    request.send();
+  });
+  return promise;
 }
 
-export function renderBy(data) {
-  $('#showIt').append(`${data.practices[0].name}`
-    + "</br>" + `${data.practices[0].visit_address.street}` + "</br>" + `${data.practices[0].visit_address.city}` + ", " + `${data.practices[0].visit_address.state}` + " " + `${data.practices[0].visit_address.zip}` + "</br>" + "Phone: " + `${data.practices[0].phones[0].number}` + "</br>" + "Accepts New Patients: " +  `${data.practices[0].accepts_new_patients}` + "</br>" + "</br>");
-}
+export function callByName(firstName, lastName){
+    let promise = new Promise(function(resolve, reject) {
+      let request = new XMLHttpRequest();
+      let url =`https://api.betterdoctor.com/2016-03-01/doctors?first_name=${firstName}&last_name=${lastName}&location=wa-seattle&skip=0&limit=100&user_key=${process.env.exports.apiKey}`;
+      request.onload = function() {
+        if (this.status === 200) {
+          resolve(request.response);
+        } else {
+          reject(Error(request.statusText));
+        }
+      }
+      request.open("GET", url, true);
+      request.send();
+    });
+    return promise;
+  }

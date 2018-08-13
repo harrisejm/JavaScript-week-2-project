@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { renderBy, render } from './doctors';
+import { callByCondition, callByName } from './doctors';
 
 //import 'bootstrap';
 //import 'bootstrap/dist/css/bootstrap.min.css';
@@ -11,23 +11,9 @@ $(document).ready(function() {
     let firstName = $("fistName").val();
     let lastName = $("#lastName").val();
 
-    let promise = new Promise(function(resolve, reject) {
-      let request = new XMLHttpRequest();
-      let url =`https://api.betterdoctor.com/2016-03-01/doctors?first_name=${firstName}&last_name=${lastName}&location=wa-seattle&skip=0&limit=100&user_key=${process.env.exports.apiKey}`;
-      request.onload = function() {
-        if (this.status === 200) {
-          resolve(request.response);
-        } else {
-          reject(Error(request.statusText));
-        }
-      }
-      request.open("GET", url, true);
-      request.send();
-    });
-
-    promise.then(function(response) {
+    callByName(firstName, lastName).then(function(response) {
       let body = JSON.parse(response);
-      render(body.data);
+      renderByName(body.data);
 
     }, function(error) {
       $('#showErrors').text(`There was an error processing your request: ${error.message}`);
@@ -49,29 +35,33 @@ $(document).ready(function() {
       condition = condition1.join("");
     }
 
-    let promise = new Promise(function(resolve, reject) {
-      let request = new XMLHttpRequest();
-      let url =`https://api.betterdoctor.com/2016-03-01/doctors?query=${condition}&location=wa-seattle&user_key=0d9b3d2e941d5fb5fc6b1ecdc6baf06d`;
-      request.onload = function() {
-        if (this.status === 200) {
-          resolve(request.response);
-        } else {
-          reject(Error(request.statusText));
-        }
-      }
-      request.open("GET", url, true);
-      request.send();
-    });
-
-    promise.then(function(response) {
+    callByCondition(condition).then(function(response) {
       let body = JSON.parse(response);
       $('#showIt').text("");
-      for (let i = 0; i < body.data.length; i++) {
-        renderBy(body.data[i]);
+      if (body.data.length === 0) {
+         $('#showIt').append("No results found");
+      } else {
+        for (let i = 0; i < body.data.length; i++) {
+          renderByCondition(body.data[i]);
+        }
       }
     }, function(error) {
       $('#showErrors').text(`There was an error processing your request: ${error.message}`);
     });
   });
+
+  function renderByName(data) {
+    if (data.length === 0) {
+       $('#showIt').append("No results found");
+    } else {
+      $('#showIt').append(`${data[0].profile.first_name}` + " " +  `${data[0].profile.last_name}` + " " + `${data[0].profile.title}` + "</br>" + `${data[0].practices[0].visit_address.street}` + "</br>" + `${data[0].practices[0].visit_address.city}` + ", " + `${data[0].practices[0].visit_address.state}` + " " + `${data[0].practices[0].visit_address.zip}` + "</br>" + "Phone: " + `${data[0].practices[0].phones[0].number}` + "</br>" + `${data[0].practices[0].website}`);
+    }
+  }
+
+  function renderByCondition(data) {
+    $('#showIt').append(`${data.practices[0].name}`
+      + "</br>" + `${data.practices[0].visit_address.street}` + "</br>" + `${data.practices[0].visit_address.city}` + ", " + `${data.practices[0].visit_address.state}` + " " + `${data.practices[0].visit_address.zip}` + "</br>" + "Phone: " + `${data.practices[0].phones[0].number}` + "</br>" + "Accepts New Patients: " +  `${data.practices[0].accepts_new_patients}` + "</br>" + "</br>");
+  }
+
 
 });
